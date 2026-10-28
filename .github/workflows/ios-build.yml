@@ -13,11 +13,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check files exist
+        working-directory: ${{ github.workspace }}
+        run: |
+          missing=0
+          for f in ios/project.yml \
+            ios/UniversalUSBManager/App.swift \
+            ios/UniversalUSBManager/BrowserView.swift \
+            ios/UniversalUSBManager/CopyEngine.swift \
+            ios/UniversalUSBManager/HomeView.swift \
+            ios/UniversalUSBManager/Models.swift \
+            ios/UniversalUSBManager/QueueView.swift \
+            ios/UniversalUSBManager/Stores.swift \
+            ios/UniversalUSBManager/TransferQueue.swift; do
+            if [ ! -f "$f" ]; then echo "::error::Missing file: $f"; missing=1; fi
+          done
+          find ios -type f | sort
+          exit $missing
+
       - name: Install XcodeGen
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          set -o pipefail
+          xcodegen generate 2>&1 | tee xcodegen.log
+          ls -la
 
       - name: Build (no code signing)
         run: |
@@ -30,6 +51,14 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee build.log
+
+      - name: Show errors on summary page
+        if: failure()
+        run: |
+          for f in xcodegen.log build.log; do
+            if [ -f "$f" ]; then grep -iE "error" "$f" | head -15 | sed 's/^/::error::/'; fi
+          done
+          exit 0
 
       - name: Package unsigned IPA
         run: |
@@ -52,4 +81,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-build-log
-          path: ios/build.log
+          path: |
+            ios/build.log
+            ios/xcodegen.log
