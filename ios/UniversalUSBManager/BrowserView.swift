@@ -19,14 +19,19 @@ struct BrowserView: View {
     @State private var reload = 0
     @State private var preview: URL?
     @State private var message: String?
-    @State private var showNewFolder = false, showRename = false, showDelete = false, showPaste = false, showDetails = false
+    @State private var showNewFolder = false
+    @State private var showRename = false
+    @State private var showDelete = false
+    @State private var showPaste = false
+    @State private var showDetails = false
     @State private var text = ""
     @State private var policy: ConflictPolicy = .keepBoth
     @State private var verify = false
     @State private var selBytes: Int64?
 
     init(root: URL, title: String) {
-        self.root = root; self.title = title
+        self.root = root
+        self.title = title
         _dir = State(initialValue: root)
     }
 
@@ -144,7 +149,8 @@ struct BrowserView: View {
     private func goForward() { guard let n = fwd.popLast() else { return }; back.append(dir); dir = n; sel = [] }
 
     private func load() async {
-        loading = true; error = nil
+        loading = true
+        error = nil
         let d = dir
         let result: Result<[Item], Error> = await Task.detached {
             do {
@@ -186,7 +192,8 @@ struct BrowserView: View {
         var failed = 0
         for f in selected { do { try FileManager.default.removeItem(at: f.url) } catch { failed += 1 } }
         message = failed == 0 ? "Deleted." : "\(failed) item(s) could not be deleted (read-only or in use)."
-        sel = []; reload += 1
+        sel = []
+        reload += 1
     }
 
     private func startPaste() {
