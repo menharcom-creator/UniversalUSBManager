@@ -1,0 +1,36 @@
+name: UniversalUSBManager
+options:
+  bundleIdPrefix: com.universalusb
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  UniversalUSBManager:
+    type: application
+    platform: iOS
+    sources:
+      - UniversalUSBManager
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.universalusb.manager
+    info:
+      path: UniversalUSBManager/Info.plist
+      properties:
+        CFBundleDisplayName: USB Storage Manager
+        UILaunchScreen: {}
+        LSSupportsOpeningDocumentsInPlace: true
+        UIFileSharingEnabled: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
