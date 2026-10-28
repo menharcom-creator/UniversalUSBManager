@@ -6,12 +6,17 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
     defaults:
       run:
         working-directory: ios
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - name: Check files exist
         working-directory: ${{ github.workspace }}
@@ -28,7 +33,6 @@ jobs:
             ios/UniversalUSBManager/TransferQueue.swift; do
             if [ ! -f "$f" ]; then echo "::error::Missing file: $f"; missing=1; fi
           done
-          find ios -type f | sort
           exit $missing
 
       - name: Install XcodeGen
@@ -38,7 +42,7 @@ jobs:
         run: |
           set -o pipefail
           xcodegen generate 2>&1 | tee xcodegen.log
-          ls -la
+          xcodebuild -version
 
       - name: Build (no code signing)
         run: |
